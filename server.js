@@ -7,6 +7,7 @@ import cors from 'cors';
 dotenv.config();
 
 import userRoutes from './routes/userRoutes.js';
+import { errorHandler, notFound } from './middlewares/errorMiddleware.js';
 
 connectDb();
 
@@ -19,6 +20,10 @@ app.use('/api/users', userRoutes);
 app.get('/', (req, res) => {
   res.json({ message: 'Hello World' });
 });
+
+app.use(notFound);
+app.use(errorHandler);
+
 
 const PORT = process.env.PORT;
 
