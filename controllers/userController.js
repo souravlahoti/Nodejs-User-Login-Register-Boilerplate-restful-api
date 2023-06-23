@@ -2,18 +2,14 @@ import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 
-const emailRegexExp =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
-
 //@desc     Auth User & Get Token
 //@route    POST api/users/login
 //@access   Public
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  let user = null;
-  const isEmail = emailRegexExp.test(email);
-  if (isEmail) user = await User.findOne({ email });
-  else user = await User.findOne({ username: email });
+  const user = await User.findOne({
+    $or: [{ email: email }, { username: email }],
+  });
 
   if (user && (await user.matchPassword(password))) {
     return res.json({
